@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempMail", "TempMail\TempMail.csproj", "{C380181A-57D1-4F33-93AC-A3552076AD40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C380181A-57D1-4F33-93AC-A3552076AD40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C380181A-57D1-4F33-93AC-A3552076AD40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C380181A-57D1-4F33-93AC-A3552076AD40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C380181A-57D1-4F33-93AC-A3552076AD40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69427DA2-4A0C-48AB-ABB2-B80B5F71F848}
+	EndGlobalSection
+EndGlobal

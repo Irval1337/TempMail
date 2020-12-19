@@ -56,5 +56,20 @@ namespace TempMail.Properties
                 this["server"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string hash
+        {
+            get
+            {
+                return ((string)(this["hash"]));
+            }
+            set
+            {
+                this["hash"] = value;
+            }
+        }
     }
 }

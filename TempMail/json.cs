@@ -33,4 +33,15 @@ namespace TempMail
         public string message { get; set; }
         public string error { get; set; }
     }
+
+    class User
+    {
+        public string hash { get; set; }
+        public string error { get; set; }
+    }
+    class Limit
+    {
+        public int? limit { get; set; }
+        public string error { get; set; }
+    }
 }

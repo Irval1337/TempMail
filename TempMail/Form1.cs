@@ -56,6 +56,62 @@ namespace TempMail
             }
         }
 
+        public void ChangeHash()
+        {
+            try
+            {
+                string name = "YG_" + GenRandomString("QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm", 10);
+                WebProxy proxy = null;
+                if (Properties.Settings.Default.UseProxy)
+                {
+                    ParseProxy(new Uri(Properties.Settings.Default.server));
+                    while (!TestProxy(builder.ToString())) { ParseProxy(new Uri(Properties.Settings.Default.server)); }
+                    var spl = builder.ToString().Split(':');
+                    proxy = new WebProxy(new Uri($"http://{spl[0]}:{spl[1]}/"), true);
+                }
+
+                string response = GET("https://post-shift.ru/api.php", $"action=reg&email={name}", proxy);
+                User user = JsonConvert.DeserializeObject<User>(response);
+                if (user.hash != null)
+                {
+                    Properties.Settings.Default.hash = user.hash;
+                    Properties.Settings.Default.Save();
+                    this.Text = $"TempMail [Остаток: 100]";
+                }
+            }
+            catch { }
+        }
+
+        public int? GetLimit()
+        {
+            repeat:
+            try
+            {
+                WebProxy proxy = null;
+                if (Properties.Settings.Default.UseProxy)
+                {
+                    ParseProxy(new Uri(Properties.Settings.Default.server));
+                    while (!TestProxy(builder.ToString())) { ParseProxy(new Uri(Properties.Settings.Default.server)); }
+                    var spl = builder.ToString().Split(':');
+                    proxy = new WebProxy(new Uri($"http://{spl[0]}:{spl[1]}/"), true);
+                }
+
+                string response = GET("https://post-shift.ru/api.php", $"action=balance&hash={Properties.Settings.Default.hash}", proxy);
+                Limit user = JsonConvert.DeserializeObject<Limit>(response);
+                if (user.limit == 0 || user.error != null)
+                {
+                    ChangeHash();
+                    goto repeat;
+                }
+                else
+                {
+                    this.Text = $"TempMail [Остаток: {user.limit}]";
+                    return user.limit;
+                }
+            }
+            catch { return null; }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             label1.Text = "Адрес электронной почты: ";
@@ -66,6 +122,7 @@ namespace TempMail
             button3.Visible = false;
             try
             {
+                GetLimit();
                 string name = "YG_" + GenRandomString("QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm", 7);
                 WebProxy proxy = null;
                 if (Properties.Settings.Default.UseProxy)
@@ -75,7 +132,7 @@ namespace TempMail
                     var spl = builder.ToString().Split(':');
                     proxy = new WebProxy(new Uri($"http://{spl[0]}:{spl[1]}/"), true);
                 }
-                string response = GET("https://post-shift.ru/api.php", $"action=new&name={name}&type=json", proxy);
+                string response = GET("https://post-shift.ru/api.php", $"action=new&name={name}&hash={Properties.Settings.Default.hash}", proxy);
                 Email mail = JsonConvert.DeserializeObject<Email>(response);
                 if (mail.email != null && mail.key != null)
                 {
@@ -91,7 +148,8 @@ namespace TempMail
                     timer1.Start();
                 }
                 else
-                    MessageBox.Show("Ошибка создания временной почты: " + mail.error, "Ошибка"); 
+                    MessageBox.Show("Ошибка создания временной почты: " + mail.error, "Ошибка");
+                GetLimit();
             }
             catch (Exception ex){
                 MessageBox.Show("Ошибка во время получения ответа от сервера\n" + ex.ToString(), "Ошибка запроса");
@@ -120,6 +178,11 @@ namespace TempMail
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.Text = $"TempMail [Остаток: null]";
+            if (String.IsNullOrEmpty(Properties.Settings.Default.hash))
+                ChangeHash();
+            else
+                this.Text = $"TempMail [Остаток: {GetLimit()}]";
             label1.Text = "Адрес электронной почты: ";
             label2.Text = "Секретный ключ: ";
             label3.Visible = false;
@@ -156,7 +219,7 @@ namespace TempMail
 
         private void button3_Click(object sender, EventArgs e)
         {
-            new mail(Key, Email, proxy).ShowDialog();
+            new mail(Key, Email, proxy, this).ShowDialog();
         }
 
         private void label1_DoubleClick(object sender, EventArgs e)

@@ -22,13 +22,16 @@ namespace TempMail
         int index = 0;
         int count;
         bool first = true;
-        public mail(string key, string mail, IWebProxy proxy)
+        Form1 main;
+
+        public mail(string key, string mail, IWebProxy proxy, Form1 form1)
         {
             InitializeComponent();
             this.Text = mail;
             Key = key;
             Mail = mail;
             Proxy = proxy;
+            main = form1;
         }
 
         private void textBox1_Enter(object sender, EventArgs e)
@@ -40,7 +43,8 @@ namespace TempMail
         {
             try
             {
-                string response = GET("https://post-shift.ru/api.php", $"action=getlist&key={Key}&type=json", Proxy);
+                main.GetLimit();
+                string response = GET("https://post-shift.ru/api.php", $"action=getlist&key={Key}&hash={Properties.Settings.Default.hash}", Proxy);
                 if (!response.StartsWith("["))
                 {
                     Letters letters = JsonConvert.DeserializeObject<Letters>(response);
@@ -58,6 +62,7 @@ namespace TempMail
 
                     ChangeMail(letters.letters, index);
                 }
+                main.GetLimit();
             }
             catch (Exception ex)
             {
@@ -73,12 +78,14 @@ namespace TempMail
             textBox5.Text = data[index].date;
             try
             {
-                string response = GET("https://post-shift.ru/api.php", $"action=getmail&key={Key}&id={count - index}&type=json", Proxy);
+                main.GetLimit();
+                string response = GET("https://post-shift.ru/api.php", $"action=getmail&key={Key}&id={count - index}&hash={Properties.Settings.Default.hash}", Proxy);
                 Body message = JsonConvert.DeserializeObject<Body>(response);
                 if (message.message != null)
                     richTextBox1.Text = message.message;
                 else
                     MessageBox.Show("Ошибка получения ответа сервера: " + message.error, "Ошибка");
+                main.GetLimit();
             }
             catch (Exception ex)
             {
